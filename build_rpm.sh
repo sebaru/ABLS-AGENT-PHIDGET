@@ -37,7 +37,7 @@ echo "Install prefix:    /usr (forced for RPM packaging)"
 
 mkdir -p "$BUILD_DIR"
 
-cmake -S "$PROJECT_DIR" -B "$BUILD_DIR" -DCMAKE_INSTALL_PREFIX=/usr
+cmake -S "$PROJECT_DIR" -B "$BUILD_DIR" -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
 if [[ "$PACKAGE_ONLY" == "false" ]]; then
   cmake --build "$BUILD_DIR" -- -j"$(nproc)"
@@ -53,9 +53,15 @@ cpack -G RPM
 popd >/dev/null
 
 runtime_rpm=$(find "$BUILD_DIR" -maxdepth 1 -type f -name 'abls-agent-phidget-[0-9]*.rpm' | sort | tail -n 1)
+debuginfo_rpm=$(find "$BUILD_DIR" -maxdepth 1 -type f -name '*debuginfo*.rpm' | sort | tail -n 1)
 
 if [[ -z "$runtime_rpm" ]]; then
   echo "RPM generation failed: expected runtime package in $BUILD_DIR"
+  exit 1
+fi
+
+if [[ -z "$debuginfo_rpm" ]]; then
+  echo "RPM generation failed: expected debuginfo package in $BUILD_DIR"
   exit 1
 fi
 
@@ -83,4 +89,5 @@ fi
 
 echo "RPM generated:"
 echo "  $runtime_rpm"
+echo "  $debuginfo_rpm"
 echo "RPM build complete."

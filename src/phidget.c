@@ -499,7 +499,7 @@ error:
 /* Sortie: Niet                                                                                                               */
 /******************************************************************************************************************************/
  gint main ( gint argc, gchar *argv[] )
-  { Config_add_parameter ( "test", "Test option" );
+  { Config_add_parameter ( "test", "@IP", "Test option", FALSE );
     struct ABLS_AGENT *agent = Agent_init ( "phidget", sizeof(struct ABLS_PHIDGET_VARS), argc, argv );
 
     sleep(5); /* On attend que le master soit pret */
