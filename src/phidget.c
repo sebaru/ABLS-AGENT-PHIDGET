@@ -29,6 +29,7 @@
  #include <fcntl.h>
 
  #include "phidget.h"
+#ifdef bouh
 
 /******************************************************************************************************************************/
 /* Charger_un_Hub: Charge un Hub dans la librairie                                                                            */
@@ -490,19 +491,23 @@ error:
        liste = g_slist_next(liste);
      }
   }
+  #endif
+
 /******************************************************************************************************************************/
 /* Run_thread: Prend en charge un des sous thread de l'agent                                                                  */
 /* Entrée: la structure THREAD associée                                                                                       */
 /* Sortie: Niet                                                                                                               */
 /******************************************************************************************************************************/
- void main ( gint argc, gchar *argv[] )
-  { struct ABLS_AGENT *agent = Agent_init ( module, sizeof(struct ABLS_PHIDGET_VARS) );
+ gint main ( gint argc, gchar *argv[] )
+  { Config_add_parameter ( "test", "Test option" );
+    struct ABLS_AGENT *agent = Agent_init ( "phidget", sizeof(struct ABLS_PHIDGET_VARS), argc, argv );
 
-    struct ABLS_PHIDGET_VARS *vars = module->vars;
+    sleep(5); /* On attend que le master soit pret */
+#ifdef bouh
 
-    gchar *thread_tech_id = Json_get_string ( module->config, "thread_tech_id" );
-    gchar *hostname    = Json_get_string ( module->config, "hostname" );
-    gchar *description = Json_get_string ( module->config, "description" );
+    gchar *thread_tech_id = Json_get_string ( agent->config, "thread_tech_id" );
+    gchar *hostname    = Json_get_string ( agent->config, "hostname" );
+    gchar *description = Json_get_string ( agent->config, "description" );
 
 again:
     PhidgetReturnCode result = PhidgetNet_addServer( hostname, hostname, 5661, Json_get_string(module->config, "password"), 0);
@@ -554,6 +559,7 @@ again:
     g_slist_foreach ( vars->Liste_sensors, (GFunc) g_free, NULL );
     g_slist_free ( vars->Liste_sensors );
 connect_failed:
+#endif
     Agent_end(agent);
   }
 /*----------------------------------------------------------------------------------------------------------------------------*/

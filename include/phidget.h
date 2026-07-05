@@ -34,13 +34,14 @@
   { GSList *Liste_sensors;                                                                        /* List of Phidget Elements */
   };
 
+#ifdef bouh
  struct ABLS_PHIDGET_ELEMENT
   { struct THREAD *module; /* Module père de l'élément */
     PhidgetHandle handle;
     gboolean attached;
     JsonNode *element; /* Issu du module->config au chargement */
   };
-
+#endif
 /****************************************************** Déclaration des prototypes ********************************************/
 
 #endif

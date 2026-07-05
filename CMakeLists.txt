@@ -35,7 +35,7 @@ pkg_check_modules(ABLS_LIBS REQUIRED abls-libs)
 pkg_check_modules(ABLS_AGENT_LIBS REQUIRED abls-agent-libs)
 
 add_executable(abls-agent-phidget
-  src/main.c
+  src/phidget.c
 )
 
 target_include_directories(abls-agent-phidget PRIVATE
@@ -60,5 +60,29 @@ target_link_libraries(abls-agent-phidget PRIVATE
 )
 
 install(TARGETS abls-agent-phidget
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
 )
+
+set(CPACK_PACKAGE_NAME "abls-agent-phidget")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_RELEASE "1")
+set(CPACK_PACKAGE_VENDOR "Abls-Habitat")
+set(CPACK_PACKAGE_CONTACT "sebastien.lefevre@abls-habitat.fr")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
+set(CPACK_PACKAGE_LICENSE "GPLv3")
+
+set(CPACK_GENERATOR "RPM;DEB")
+set(CPACK_RPM_COMPONENT_INSTALL ON)
+set(CPACK_DEB_COMPONENT_INSTALL ON)
+set(CPACK_COMPONENTS_ALL runtime)
+
+set(CPACK_RPM_RUNTIME_PACKAGE_NAME "abls-agent-phidget")
+set(CPACK_RPM_RUNTIME_PACKAGE_SUMMARY "Abls-Habitat Phidget runtime")
+set(CPACK_RPM_RUNTIME_PACKAGE_REQUIRES "glib2, json-glib, libphidget22, abls-libs, abls-agent-libs")
+set(CPACK_RPM_RUNTIME_FILE_NAME "abls-agent-phidget-${PROJECT_VERSION}-${CPACK_PACKAGE_RELEASE}.rpm")
+
+set(CPACK_DEBIAN_RUNTIME_PACKAGE_NAME "abls-agent-phidget")
+set(CPACK_DEBIAN_RUNTIME_PACKAGE_DEPENDS "libglib2.0-0, libjson-glib-1.0-0, libphidget22, abls-libs, abls-agent-libs")
+set(CPACK_DEBIAN_RUNTIME_PACKAGE_SHLIBDEPS ON)
+
+include(CPack)
