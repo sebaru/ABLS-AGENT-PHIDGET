@@ -499,8 +499,8 @@ error:
 /* Sortie: Niet                                                                                                               */
 /******************************************************************************************************************************/
  gint main ( gint argc, gchar *argv[] )
-  { Config_add_parameter ( "test", "@IP", "Test option", FALSE );
-    struct ABLS_AGENT *agent = Agent_init ( "phidget", sizeof(struct ABLS_PHIDGET_VARS), argc, argv );
+  { struct ABLS_AGENT *agent = Agent_init ( argv[0], "phidget", sizeof(struct ABLS_PHIDGET_VARS), argc, argv );
+    Json_to_log ( "local_config", agent->agent_tech_id, agent->local_config );
 
     sleep(5); /* On attend que le master soit pret */
 #ifdef bouh
