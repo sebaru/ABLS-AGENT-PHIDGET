@@ -51,6 +51,10 @@ target_compile_options(abls-agent-phidget PRIVATE
   -Wall -Wextra -Wno-unused-parameter -Wno-unused-result -pipe -g -ggdb
 )
 
+target_compile_definitions(abls-agent-phidget PRIVATE
+  ABLS_AGENT_PHIDGET_VERSION="${ABLS_AGENT_PHIDGET_VERSION}"
+)
+
 target_link_libraries(abls-agent-phidget PRIVATE
   ${GLIB_LIBRARIES}
   ${JSON_GLIB_LIBRARIES}
