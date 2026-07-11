@@ -457,11 +457,11 @@ error:
     GSList *liste = vars->Liste_sensors;
     while (liste)
      { struct ABLS_PHIDGET_ELEMENT *canal = liste->data;
-       gchar *agent_acronyme = Json_get_string(canal->element, "agent_acronyme");
-       gchar *classe         = Json_get_string(canal->element, "classe");
+       gchar *target_classe         = Json_get_string(canal->element, "classe");
+       gchar *target_agent_acronyme = Json_get_string(canal->element, "agent_acronyme");
 
-       if ( !strcasecmp ( classe, "DO" ) &&
-            !strcasecmp ( agent_acronyme, agent_acronyme ) )
+       if ( target_classe         && !strcasecmp ( target_classe, "DO" ) &&
+            target_agent_acronyme && !strcasecmp ( agent_acronyme, target_agent_acronyme ) )
         { if ( PhidgetDigitalOutput_setState( (PhidgetDigitalOutputHandle)canal->handle, etat ) != EPHIDGET_OK )
            { Phidget_print_error ( canal ); }
           break;
