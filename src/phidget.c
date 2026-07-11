@@ -294,7 +294,7 @@
 
     struct ABLS_PHIDGET_ELEMENT *canal = g_try_malloc0 ( sizeof(struct ABLS_PHIDGET_ELEMENT) );
     if (!canal)
-     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "Memory Error on S/N %d, port '%d' capteur '%s'", serial, port, capteur );
+     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ALERT, "Memory Error on S/N %d, port '%d' capteur '%s'", serial, port, capteur );
        return;
      }
 
@@ -436,34 +436,23 @@ error:
 /******************************************************************************************************************************/
  static void Phidget_SET_DO ( struct ABLS_AGENT *agent, JsonNode *msg )
   { struct ABLS_PHIDGET_VARS *vars = agent->vars;
-    gchar *msg_agent_tech_id  = Json_get_string ( msg, "token_lvl1" );
-    gchar *msg_agent_acronyme = Json_get_string ( msg, "token_lvl2" );
-    gchar *msg_tech_id         = Json_get_string ( msg, "tech_id" );
-    gchar *msg_acronyme        = Json_get_string ( msg, "acronyme" );
+    gchar *agent_acronyme = Json_get_string ( msg, "mqtt_token_lvl2" );
+    gchar *tech_id        = Json_get_string ( msg, "tech_id" );
+    gchar *acronyme       = Json_get_string ( msg, "acronyme" );
 
-    if (!msg_agent_tech_id)
-    { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "Requete mal formée manque msg_agent_tech_id" );
-       return;
-     }
-
-    if (!msg_agent_acronyme)
-    { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "Requete mal formée manque msg_agent_acronyme" );
-       return;
-     }
-
-    if (strcasecmp (msg_agent_tech_id, agent->agent_tech_id))
-    { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_DEBUG, "Pas pour nous" );
+    if (!agent_acronyme)
+     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "Requete mal formée manque mqtt_token_lvl2" );
        return;
      }
 
     if (!Json_has_member ( msg, "etat" ))
-    { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "Requete mal formée manque etat" );
+     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "Requete mal formée manque etat" );
        return;
      }
 
     gboolean etat = Json_get_bool ( msg, "etat" );
     Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_NOTICE, "SET_DO '%s:%s'/'%s:%s'=%d",
-          msg_agent_tech_id, msg_agent_acronyme, msg_tech_id, msg_acronyme, etat );
+          agent->agent_tech_id, agent_acronyme, tech_id, acronyme, etat );
 
     GSList *liste = vars->Liste_sensors;
     while (liste)
@@ -472,7 +461,7 @@ error:
        gchar *classe         = Json_get_string(canal->element, "classe");
 
        if ( !strcasecmp ( classe, "DO" ) &&
-            !strcasecmp ( agent_acronyme, msg_agent_acronyme ) )
+            !strcasecmp ( agent_acronyme, agent_acronyme ) )
         { if ( PhidgetDigitalOutput_setState( (PhidgetDigitalOutputHandle)canal->handle, etat ) != EPHIDGET_OK )
            { Phidget_print_error ( canal ); }
           break;
@@ -488,7 +477,6 @@ error:
  gint main ( gint argc, gchar *argv[] )
   { struct ABLS_AGENT *agent = Agent_init ( argv[0], "phidget", ABLS_AGENT_PHIDGET_VERSION, sizeof(struct ABLS_PHIDGET_VARS), argc, argv );
     struct ABLS_PHIDGET_VARS *vars = agent->vars;
-    Info_change_log_level ( Json_get_int ( agent->api_config, "log_level" ) );
 
     gchar *hostname    = Json_get_string ( agent->api_config, "hostname" );
     gchar *password    = Json_get_string ( agent->api_config, "password" );
