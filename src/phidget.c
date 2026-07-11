@@ -517,7 +517,7 @@ again:
           if(element->attached == FALSE) break;
           elements = g_slist_next ( elements );
         }
-       Thread_send_comm_to_master ( module, (elements ? FALSE : TRUE) );
+       Agent_send_comm_to_master ( agent, (elements ? FALSE : TRUE) );
 /****************************************************** Ecoute du master ******************************************************/
        JsonNode *mqtt_local_message;
        while ( (mqtt_local_message = Mqtt_get_message ( agent->mqtt_local ) ) != NULL )
