@@ -32,37 +32,10 @@ pkg_check_modules(GLIB REQUIRED glib-2.0)
 pkg_check_modules(JSON_GLIB REQUIRED json-glib-1.0)
 pkg_check_modules(PHIDGET REQUIRED libphidget22)
 pkg_check_modules(ABLS_LIBS REQUIRED abls-libs)
-pkg_check_modules(ABLS_THREAD_LIBS QUIET abls-thread-libs)
-
-find_library(ABLS_LIBS_EXACT
-  NAMES abls-libs
-  PATHS /usr/local/lib64 /usr/local/lib
-  NO_DEFAULT_PATH
-)
-
-if(NOT ABLS_LIBS_EXACT)
-  set(ABLS_LIBS_EXACT ${ABLS_LIBS_LIBRARIES})
-endif()
-
-if(NOT ABLS_THREAD_LIBS_FOUND)
-  set(ABLS_THREAD_LIBS_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/../ABLS-THREAD-LIBS/include")
-  find_library(ABLS_THREAD_LIBS_LOCAL_LIBRARY
-    NAMES abls-thread-libs
-    PATHS "${CMAKE_SOURCE_DIR}/../ABLS-THREAD-LIBS/build"
-    NO_DEFAULT_PATH
-  )
-
-  if(NOT ABLS_THREAD_LIBS_LOCAL_LIBRARY)
-    message(FATAL_ERROR "abls-thread-libs not found via pkg-config and local build lib is missing. Build ABLS-THREAD-LIBS first.")
-  endif()
-
-  set(ABLS_THREAD_LIBS_LIBRARIES "${ABLS_THREAD_LIBS_LOCAL_LIBRARY}")
-endif()
+pkg_check_modules(ABLS_AGENT_LIBS REQUIRED abls-agent-libs)
 
 add_executable(abls-agent-phidget
-  src/main.c
-  src/phidget_config.c
-  src/phidget_callbacks.c
+  src/phidget.c
 )
 
 target_include_directories(abls-agent-phidget PRIVATE
@@ -71,11 +44,15 @@ target_include_directories(abls-agent-phidget PRIVATE
   ${JSON_GLIB_INCLUDE_DIRS}
   ${PHIDGET_INCLUDE_DIRS}
   ${ABLS_LIBS_INCLUDE_DIRS}
-  ${ABLS_THREAD_LIBS_INCLUDE_DIRS}
+  ${ABLS_AGENT_LIBS_INCLUDE_DIRS}
 )
 
 target_compile_options(abls-agent-phidget PRIVATE
   -Wall -Wextra -Wno-unused-parameter -Wno-unused-result -pipe -g -ggdb
+)
+
+target_compile_definitions(abls-agent-phidget PRIVATE
+  ABLS_AGENT_PHIDGET_VERSION="${ABLS_AGENT_PHIDGET_VERSION}"
 )
 
 target_link_libraries(abls-agent-phidget PRIVATE
@@ -83,9 +60,36 @@ target_link_libraries(abls-agent-phidget PRIVATE
   ${JSON_GLIB_LIBRARIES}
   ${PHIDGET_LIBRARIES}
   ${ABLS_LIBS_EXACT}
-  ${ABLS_THREAD_LIBS_LIBRARIES}
+  ${ABLS_AGENT_LIBS_LIBRARIES}
 )
 
 install(TARGETS abls-agent-phidget
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
 )
+
+set(CPACK_PACKAGE_NAME "abls-agent-phidget")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_RELEASE "1")
+set(CPACK_PACKAGE_VENDOR "Abls-Habitat")
+set(CPACK_PACKAGE_CONTACT "sebastien.lefevre@abls-habitat.fr")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
+set(CPACK_PACKAGE_LICENSE "GPLv3")
+
+set(CPACK_GENERATOR "RPM;DEB")
+set(CPACK_RPM_COMPONENT_INSTALL ON)
+set(CPACK_DEB_COMPONENT_INSTALL ON)
+set(CPACK_COMPONENTS_ALL runtime)
+
+set(CPACK_RPM_RUNTIME_PACKAGE_NAME "abls-agent-phidget")
+set(CPACK_RPM_RUNTIME_PACKAGE_SUMMARY "Abls-Habitat Phidget runtime")
+set(CPACK_RPM_RUNTIME_PACKAGE_REQUIRES "glib2, json-glib, libphidget22, abls-libs, abls-agent-libs")
+set(CPACK_RPM_RUNTIME_FILE_NAME "abls-agent-phidget-${PROJECT_VERSION}-${CPACK_PACKAGE_RELEASE}.rpm")
+set(CPACK_RPM_RUNTIME_DEBUGINFO_PACKAGE ON)
+set(CPACK_RPM_RUNTIME_DEBUGINFO_FILE_NAME "RPM-DEFAULT")
+set(CPACK_RPM_RUNTIME_BUILD_SOURCE_DIRS_PREFIX "/usr/src/debug")
+
+set(CPACK_DEBIAN_RUNTIME_PACKAGE_NAME "abls-agent-phidget")
+set(CPACK_DEBIAN_RUNTIME_PACKAGE_DEPENDS "libglib2.0-0, libjson-glib-1.0-0, libphidget22, abls-libs, abls-agent-libs")
+set(CPACK_DEBIAN_RUNTIME_PACKAGE_SHLIBDEPS ON)
+
+include(CPack)
