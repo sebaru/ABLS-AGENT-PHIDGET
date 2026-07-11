@@ -500,10 +500,29 @@ error:
 /******************************************************************************************************************************/
  gint main ( gint argc, gchar *argv[] )
   { struct ABLS_AGENT *agent = Agent_init ( argv[0], "phidget", ABLS_AGENT_PHIDGET_VERSION, sizeof(struct ABLS_PHIDGET_VARS), argc, argv );
-    Json_to_log ( "local_config", agent->agent_tech_id, agent->local_config );
     Info_change_log_level ( Json_get_int ( agent->api_config, "log_level" ) );
 
-    sleep(5); /* On attend que le master soit pret */
+    while(agent->Agent_run == TRUE)                                                          /* On tourne tant que necessaire */
+     { Agent_loop ( agent );                                             /* Loop sur l'agent pour mettre a jour la telemetrie */
+/************************************************* Calcul de la comm **********************************************************/
+      #ifdef bouh
+       GSList *elements = vars->Liste_sensors;
+       while ( elements )                                             /* Si tous les sensors sont attached, alors comm = TRUE */
+        { struct PHIDGET_ELEMENT *element = elements->data;
+          if(element->attached == FALSE) break;
+          elements = g_slist_next ( elements );
+        }
+       Thread_send_comm_to_master ( module, (elements ? FALSE : TRUE) );
+       #endif
+/****************************************************** Ecoute du master ******************************************************/
+       JsonNode *mqtt_local_message;
+       while ( (mqtt_local_message = Mqtt_get_message ( agent->mqtt_local ) ) != NULL )
+        { if (Mqtt_topic_is ( mqtt_local_message, 2, "SET_DO", agent->agent_tech_id ))
+           { /*Phidget_SET_DO ( agent, mqtt_local_message ); */ }
+          Json_unref (mqtt_local_message);
+        }
+     }
+
 #ifdef bouh
 
     gchar *thread_tech_id = Json_get_string ( agent->config, "thread_tech_id" );
