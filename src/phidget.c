@@ -294,7 +294,7 @@
 
     struct ABLS_PHIDGET_ELEMENT *canal = g_try_malloc0 ( sizeof(struct ABLS_PHIDGET_ELEMENT) );
     if (!canal)
-     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "Memory Error on S/N %d, port '%d' capteur '%s'", serial, port, capteur );
+     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ALERT, "Memory Error on S/N %d, port '%d' capteur '%s'", serial, port, capteur );
        return;
      }
 
