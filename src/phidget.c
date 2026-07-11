@@ -511,7 +511,6 @@ again:
     while(agent->Agent_run == TRUE)                                                          /* On tourne tant que necessaire */
      { Agent_loop ( agent );                                             /* Loop sur l'agent pour mettre a jour la telemetrie */
 /************************************************* Calcul de la comm **********************************************************/
-      #ifdef bouh
        GSList *elements = vars->Liste_sensors;
        while ( elements )                                             /* Si tous les sensors sont attached, alors comm = TRUE */
         { struct ABLS_PHIDGET_ELEMENT *element = elements->data;
@@ -519,45 +518,15 @@ again:
           elements = g_slist_next ( elements );
         }
        Thread_send_comm_to_master ( module, (elements ? FALSE : TRUE) );
-       #endif
 /****************************************************** Ecoute du master ******************************************************/
        JsonNode *mqtt_local_message;
        while ( (mqtt_local_message = Mqtt_get_message ( agent->mqtt_local ) ) != NULL )
         { if (Mqtt_topic_is ( mqtt_local_message, 2, "SET_DO", agent->agent_tech_id ))
-           { /*Phidget_SET_DO ( agent, mqtt_local_message ); */ }
+           { Phidget_SET_DO ( agent, mqtt_local_message ); }
           Json_unref (mqtt_local_message);
         }
      }
 
-#ifdef bouh
-
-
-    while(agent->Agent_run == TRUE)                                                          /* On tourne tant que necessaire */
-     { Agent_loop ( agent );                                             /* Loop sur l'agent pour mettre a jour la telemetrie */
-/************************************************* Calcul de la comm **********************************************************/
-       GSList *elements = vars->Liste_sensors;
-       while ( elements )                                             /* Si tous les sensors sont attached, alors comm = TRUE */
-        { struct ABLS_PHIDGET_ELEMENT *element = elements->data;
-          if(element->attached == FALSE) break;
-          elements = g_slist_next ( elements );
-        }
-       Thread_send_comm_to_master ( module, (elements ? FALSE : TRUE) );
-/****************************************************** Ecoute du master ******************************************************/
-       while ( module->MQTT_messages )
-        { pthread_mutex_lock ( &module->synchro );
-          JsonNode *request = module->MQTT_messages->data;
-          module->MQTT_messages = g_slist_remove ( module->MQTT_messages, request );
-          pthread_mutex_unlock ( &module->synchro );
-          if (Json_has_member ( request, "token_lvl0" ))
-           { gchar *token_lvl0 = Json_get_string ( request, "token_lvl0" );
-             if ( !strcasecmp( token_lvl0, "SET_DO" ) ) { Phidget_SET_DO ( module, request ); }
-           }
-          Json_unref (request);
-        }
-     }
-
-connect_failed:
-#endif
     PhidgetNet_removeServer( hostname );                                                /* Arrete la connexion au hub phidget */
     g_slist_free_full ( vars->Liste_sensors, (GDestroyNotify) Phidget_Decharger_un_IO );
     Phidget_finalize(0); /* non thread_safe apres. */
