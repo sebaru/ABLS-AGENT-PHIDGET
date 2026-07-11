@@ -226,7 +226,7 @@
 
     Info( __func__, classe, agent_acronyme, LOG_NOTICE,
           "'%s:%s' Phidget S/N '%d' Port '%d' capteur '%s' (canal '%d') attached. %d channels available.",
-          agent_acronyme, agent_acronyme, serial_number, port, capteur, num_canal, nbr_canaux );
+          canal->agent->agent_tech_id, agent_acronyme, serial_number, port, capteur, num_canal, nbr_canaux );
 
     canal->attached = TRUE;
   }
@@ -248,8 +248,8 @@
     Phidget_getChannel( handle, &num_canal );
 
     Info( __func__, "phidget", agent_acronyme, LOG_NOTICE,
-          "'%s:%s' Phidget S/N '%d' Port '%d' classe '%s' (canal '%d') detached . %d channels available.",
-          agent_acronyme, agent_acronyme, serial_number, port, classe, num_canal, nbr_canaux );
+          "'%s:%s' Phidget S/N '%d' Port '%d' classe '%s' (canal '%d') detached. %d channels available.",
+          canal->agent->agent_tech_id, agent_acronyme, serial_number, port, classe, num_canal, nbr_canaux );
     canal->attached = FALSE;
   }
 /******************************************************************************************************************************/
@@ -436,12 +436,12 @@ error:
 /******************************************************************************************************************************/
  static void Phidget_SET_DO ( struct ABLS_AGENT *agent, JsonNode *msg )
   { struct ABLS_PHIDGET_VARS *vars = agent->vars;
-    gchar *agent_acronyme = Json_get_string ( msg, "mqtt_token_lvl2" );
+    gchar *agent_acronyme = Json_get_string ( msg, "mqtt_topic_lvl2" );
     gchar *tech_id        = Json_get_string ( msg, "tech_id" );
     gchar *acronyme       = Json_get_string ( msg, "acronyme" );
 
     if (!agent_acronyme)
-     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "Requete mal formée manque mqtt_token_lvl2" );
+     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "Requete mal formée manque mqtt_topic_lvl2" );
        return;
      }
 
