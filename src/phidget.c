@@ -496,7 +496,7 @@ again:
 /* Chargement des I/O */
     Json_foreach_array_element ( agent->api_config, "IO", Phidget_Charger_un_IO, agent );
 
-    while(agent->Agent_run == TRUE)                                                          /* On tourne tant que necessaire */
+    while(agent->Agent_run == AGENT_IS_RUNNING)                                              /* On tourne tant que necessaire */
      { Agent_loop ( agent );                                             /* Loop sur l'agent pour mettre a jour la telemetrie */
 /************************************************* Calcul de la comm **********************************************************/
        GSList *elements = vars->Liste_sensors;
