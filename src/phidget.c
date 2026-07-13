@@ -490,7 +490,7 @@ again:
        Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "PhidgetNet_addServer '%s' (%s) failed: '%s'",
              hostname, description, error );
        sleep(10);
-       goto again;
+       if (agent->Agent_run == AGENT_IS_RUNNING) goto again;
      } else Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_INFO, "PhidgetNet_addServer '%s' (%s) success", hostname, description );
 
 /* Chargement des I/O */
