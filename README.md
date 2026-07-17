@@ -27,6 +27,16 @@ Containerized Phidget runtime for Abls-Habitat.
 
 Produces runtime RPM package in `build/`.
 
+The runtime package also installs a templated systemd unit:
+
+- `abls-agent-phidget@.service`
+
+Start one instance per agent tech id:
+
+```sh
+sudo systemctl enable --now abls-agent-phidget@<agent_tech_id>.service
+```
+
 ## Packaging DEB
 
 ```sh
@@ -37,6 +47,12 @@ Produces runtime RPM package in `build/`.
 Produces runtime DEB package and copies normalized artifacts to:
 
 - `build/deb/<suite>/<arch>/`
+
+The DEB package installs the same templated systemd unit:
+
+```sh
+sudo systemctl enable --now abls-agent-phidget@<agent_tech_id>.service
+```
 
 ## Release bump + publication
 
