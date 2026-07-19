@@ -508,10 +508,15 @@ again:
        Agent_send_comm_to_master ( agent, (elements ? FALSE : TRUE) );
 /****************************************************** Ecoute du master ******************************************************/
        JsonNode *mqtt_local_message;
-       while ( (mqtt_local_message = Mqtt_get_message ( agent->mqtt_local ) ) != NULL )
+       while ( (mqtt_local_message = Agent_get_mqtt_local_message ( agent ) ) != NULL )
         { if (Mqtt_topic_is ( mqtt_local_message, 2, "SET_DO", agent->agent_tech_id ))
            { Phidget_SET_DO ( agent, mqtt_local_message ); }
           Json_unref (mqtt_local_message);
+        }
+/****************************************************** Ecoute de l'api *******************************************************/
+       JsonNode *mqtt_api_message;
+       while ( (mqtt_api_message = Agent_get_mqtt_api_message ( agent ) ) != NULL )
+        { Json_unref (mqtt_api_message);
         }
      }
 
