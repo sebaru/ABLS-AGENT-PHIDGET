@@ -97,6 +97,7 @@ set(CPACK_DEB_COMPONENT_INSTALL ON)
 set(CPACK_COMPONENTS_ALL runtime)
 
 set(CPACK_RPM_RUNTIME_PACKAGE_NAME "abls-agent-phidget")
+set(CPACK_RPM_RUNTIME_PACKAGE_GROUP "abls")
 set(CPACK_RPM_RUNTIME_PACKAGE_SUMMARY "Abls-Habitat Phidget runtime")
 set(CPACK_RPM_RUNTIME_PACKAGE_REQUIRES "glib2, json-glib, libphidget22, abls-libs, abls-agent-libs")
 set(CPACK_RPM_RUNTIME_FILE_NAME "abls-agent-phidget-${PROJECT_VERSION}-${CPACK_PACKAGE_RELEASE}.rpm")
