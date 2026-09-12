@@ -30,6 +30,9 @@
 
  #include "phidget.h"
 
+ struct ABLS_AGENT *Agent = NULL;
+ struct ABLS_PHIDGET_VARS *Agent_vars = NULL;
+
 /******************************************************************************************************************************/
 /* Charger_un_Hub: Charge un Hub dans la librairie                                                                            */
 /* Entrée: La structure Json representant le hub                                                                              */
@@ -475,49 +478,59 @@ error:
 /* Sortie: Niet                                                                                                               */
 /******************************************************************************************************************************/
  gint main ( gint argc, gchar *argv[] )
-  { struct ABLS_AGENT *agent = Agent_init ( argv[0], "phidget", ABLS_AGENT_PHIDGET_VERSION, sizeof(struct ABLS_PHIDGET_VARS), argc, argv );
-    struct ABLS_PHIDGET_VARS *vars = agent->vars;
+  { Config_add_parameter ( "hostname", "hostname", "Hostname of remote Phidget device", CONFIG_STRING );
+    Config_add_parameter ( "password", "password", "Password for remote Phidget device", CONFIG_STRING );
+    Config_add_parameter ( "description", "description", "Description of remote Phidget device", CONFIG_STRING );
+    Agent = Agent_init ( argv[0], "phidget", ABLS_AGENT_PHIDGET_VERSION, sizeof(struct ABLS_PHIDGET_VARS), argc, argv );
+    Agent_vars = Agent->vars;
 
-    gchar *hostname    = Json_get_string ( agent->api_config, "hostname" );
-    gchar *password    = Json_get_string ( agent->api_config, "password" );
-    gchar *description = Json_get_string ( agent->api_config, "description" );
+    Agent_vars->hostname    = Agent_config_get_string ( Agent, "hostname" );
+    Agent_vars->password    = Agent_config_get_string ( Agent, "password" );
+    Agent_vars->description = Agent_config_get_string ( Agent, "description" );
 
 again:
-    PhidgetReturnCode result = PhidgetNet_addServer( hostname, hostname, 5661, password, 0 );
+    PhidgetReturnCode result = PhidgetNet_addServer( Agent_vars->hostname, Agent_vars->hostname, 5661, Agent_vars->password, 0 );
     if (result != EPHIDGET_OK)
      { const gchar *error;
        Phidget_getErrorDescription ( result, &error );
-       Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "PhidgetNet_addServer '%s' (%s) failed: '%s'",
-             hostname, description, error );
+       Info( __func__, Agent->agent_classe, Agent->agent_tech_id, LOG_ERR, "PhidgetNet_addServer '%s' (%s) failed: '%s'",
+             Agent_vars->hostname, Agent_vars->description, error );
        sleep(10);
-       if (agent->Agent_run == AGENT_IS_RUNNING) goto again;
-     } else Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_INFO, "PhidgetNet_addServer '%s' (%s) success", hostname, description );
+       if (Agent->Agent_run == AGENT_IS_RUNNING) goto again;
+     } else Info( __func__, Agent->agent_classe, Agent->agent_tech_id, LOG_INFO, "PhidgetNet_addServer '%s' (%s) success", Agent_vars->hostname, Agent_vars->description );
 
 /* Chargement des I/O */
-    Json_foreach_array_element ( agent->api_config, "IO", Phidget_Charger_un_IO, agent );
+    Json_foreach_array_element ( Agent->api_config, "IO", Phidget_Charger_un_IO, Agent );
 
-    while(agent->Agent_run == AGENT_IS_RUNNING)                                              /* On tourne tant que necessaire */
-     { Agent_loop ( agent );                                             /* Loop sur l'agent pour mettre a jour la telemetrie */
+    Agent_is_ready ( Agent );
+
+    while(Agent->Agent_run == AGENT_IS_RUNNING)                                              /* On tourne tant que necessaire */
+     { Agent_loop ( Agent );                                             /* Loop sur l'Agent pour mettre a jour la telemetrie */
 /************************************************* Calcul de la comm **********************************************************/
-       GSList *elements = vars->Liste_sensors;
+       GSList *elements = Agent_vars->Liste_sensors;
        while ( elements )                                             /* Si tous les sensors sont attached, alors comm = TRUE */
         { struct ABLS_PHIDGET_ELEMENT *element = elements->data;
           if(element->attached == FALSE) break;
           elements = g_slist_next ( elements );
         }
-       Agent_send_comm_to_master ( agent, (elements ? FALSE : TRUE) );
+       Agent_send_comm_to_master ( Agent, (elements ? FALSE : TRUE) );
 /****************************************************** Ecoute du master ******************************************************/
        JsonNode *mqtt_local_message;
-       while ( (mqtt_local_message = Mqtt_get_message ( agent->mqtt_local ) ) != NULL )
-        { if (Mqtt_topic_is ( mqtt_local_message, 2, "SET_DO", agent->agent_tech_id ))
-           { Phidget_SET_DO ( agent, mqtt_local_message ); }
+       while ( (mqtt_local_message = Agent_get_mqtt_local_message ( Agent ) ) != NULL )
+        { if (Mqtt_topic_is ( mqtt_local_message, 2, "SET_DO", Agent->agent_tech_id ))
+           { Phidget_SET_DO ( Agent, mqtt_local_message ); }
           Json_unref (mqtt_local_message);
+        }
+/****************************************************** Ecoute de l'api *******************************************************/
+       JsonNode *mqtt_api_message;
+       while ( (mqtt_api_message = Agent_get_mqtt_api_message ( Agent ) ) != NULL )
+        { Json_unref (mqtt_api_message);
         }
      }
 
-    PhidgetNet_removeServer( hostname );                                                /* Arrete la connexion au hub phidget */
-    g_slist_free_full ( vars->Liste_sensors, (GDestroyNotify) Phidget_Decharger_un_IO );
+    PhidgetNet_removeServer( Agent_vars->hostname );                                                /* Arrete la connexion au hub phidget */
+    g_slist_free_full ( Agent_vars->Liste_sensors, (GDestroyNotify) Phidget_Decharger_un_IO );
     Phidget_finalize(0); /* non thread_safe apres. */
-    Agent_end(agent);
+    Agent_end(Agent);
   }
 /*----------------------------------------------------------------------------------------------------------------------------*/
