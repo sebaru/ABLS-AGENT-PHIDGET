@@ -31,7 +31,10 @@
  #include <abls-agent-libs/abls-agent-libs.h>
 
  struct ABLS_PHIDGET_VARS                                                            /* Communication entre DLS et la Phidget */
-  { GSList *Liste_sensors;                                                                        /* List of Phidget Elements */
+  { gchar *hostname;                                                                     /* @IP ou hostname du device phidget */
+    gchar *password;                                                                    /* Password for remote Phidget device */
+    gchar *description;                                                               /* Description of remote Phidget device */
+    GSList *Liste_sensors;                                                                        /* List of Phidget Elements */
   };
 
 
@@ -41,6 +44,9 @@
     gboolean attached;
     JsonNode *element; /* Issu du api_config->IO au chargement */
   };
+
+ extern struct ABLS_AGENT *Agent;
+ extern struct ABLS_PHIDGET_VARS *Agent_vars;
 /****************************************************** Déclaration des prototypes ********************************************/
 
 #endif
