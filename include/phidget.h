@@ -34,6 +34,7 @@
   { gchar *hostname;                                                                     /* @IP ou hostname du device phidget */
     gchar *password;                                                                    /* Password for remote Phidget device */
     gchar *description;                                                               /* Description of remote Phidget device */
+    gint serial;                                                                    /* Serial number of remote Phidget device */
     GSList *Liste_sensors;                                                                        /* List of Phidget Elements */
   };
 
