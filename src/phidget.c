@@ -289,15 +289,16 @@
  static void Phidget_Charger_un_IO (JsonArray *array, guint index_, JsonNode *element, gpointer user_data )
   { struct ABLS_AGENT *agent = user_data;
     struct ABLS_PHIDGET_VARS *vars = agent->vars;
-    gint serial    = Json_get_int   ( agent->api_config, "serial" );
     gchar *capteur = Json_get_string( element, "capteur" );
     gint port      = Json_get_int   ( element, "port" );
 
-    Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_INFO, "Loading S/N %d, port '%d', capteur '%s'", serial, port, capteur );
+    Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_INFO, "Loading S/N %d, port '%d', capteur '%s'",
+          Agent_vars->serial, port, capteur );
 
     struct ABLS_PHIDGET_ELEMENT *canal = g_try_malloc0 ( sizeof(struct ABLS_PHIDGET_ELEMENT) );
     if (!canal)
-     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ALERT, "Memory Error on S/N %d, port '%d' capteur '%s'", serial, port, capteur );
+     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ALERT, "Memory Error on S/N %d, port '%d' capteur '%s'",
+             Agent_vars->serial, port, capteur );
        return;
      }
 
@@ -308,56 +309,56 @@
      { if ( PhidgetPHSensor_create( (PhidgetPHSensorHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
        if ( Phidget_setOnErrorHandler( canal->handle, Phidget_onError, canal ) ) goto error;
        if ( PhidgetPHSensor_setOnPHChangeHandler( (PhidgetPHSensorHandle)canal->handle, Phidget_onPHSensorChange, canal ) ) goto error;
-       Phidget_set_config ( canal, serial, port, TRUE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, TRUE );
      }
     else if (!strcasecmp(capteur, "ADP1000-ORP"))
      { if ( PhidgetVoltageInput_create( (PhidgetVoltageInputHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
        if ( Phidget_setOnErrorHandler( canal->handle, Phidget_onError, canal ) ) goto error;
        if ( PhidgetVoltageInput_setOnVoltageChangeHandler( (PhidgetVoltageInputHandle)canal->handle,
                                                             Phidget_onVoltageInputChange, canal ) != EPHIDGET_OK ) goto error;
-       Phidget_set_config ( canal, serial, port, TRUE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, TRUE );
      }
     else if (!strcasecmp(capteur, "1130-PH"))
      { if ( PhidgetVoltageInput_create( (PhidgetVoltageInputHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
        if ( Phidget_setOnErrorHandler( canal->handle, Phidget_onError, canal ) ) goto error;
        if ( PhidgetVoltageInput_setOnVoltageChangeHandler( (PhidgetVoltageInputHandle)canal->handle,
                                                             Phidget_onVoltageInputChange, canal ) != EPHIDGET_OK ) goto error;
-       Phidget_set_config ( canal, serial, port, TRUE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, TRUE );
      }
     else if (!strcasecmp(capteur, "1130-ORP"))
      { if ( PhidgetVoltageInput_create( (PhidgetVoltageInputHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
        if ( Phidget_setOnErrorHandler( canal->handle, Phidget_onError, canal ) ) goto error;
        if ( PhidgetVoltageInput_setOnSensorChangeHandler( (PhidgetVoltageInputHandle)canal->handle,
                                                            Phidget_onSensorChange, canal ) != EPHIDGET_OK ) goto error;
-       Phidget_set_config ( canal, serial, port, TRUE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, TRUE );
      }
     else if (!strcasecmp(capteur, "TMP1200_0-PT100-3850"))
      { if ( PhidgetTemperatureSensor_create( (PhidgetTemperatureSensorHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
        if ( Phidget_setOnErrorHandler( canal->handle, Phidget_onError, canal ) ) goto error;
        if ( PhidgetTemperatureSensor_setOnTemperatureChangeHandler( (PhidgetTemperatureSensorHandle)canal->handle,
                                                                      Phidget_onTemperatureSensorChange, canal ) != EPHIDGET_OK ) goto error;
-       Phidget_set_config ( canal, serial, port, FALSE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, FALSE );
      }
     else if (!strcasecmp(capteur, "TMP1200_0-PT100-3920"))
      { if ( PhidgetTemperatureSensor_create( (PhidgetTemperatureSensorHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
        if ( Phidget_setOnErrorHandler( canal->handle, Phidget_onError, canal ) ) goto error;
        if ( PhidgetTemperatureSensor_setOnTemperatureChangeHandler( (PhidgetTemperatureSensorHandle)canal->handle,
                                                                      Phidget_onTemperatureSensorChange, canal ) != EPHIDGET_OK ) goto error;
-       Phidget_set_config ( canal, serial, port, FALSE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, FALSE );
      }
     else if (!strcasecmp(capteur, "AC-CURRENT-10A"))
      { if ( PhidgetVoltageInput_create( (PhidgetVoltageInputHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
        if ( Phidget_setOnErrorHandler( canal->handle, Phidget_onError, canal ) ) goto error;
        if ( PhidgetVoltageInput_setOnSensorChangeHandler( (PhidgetVoltageInputHandle)canal->handle,
                                                            Phidget_onVoltageSensorChange, canal ) != EPHIDGET_OK ) goto error;
-       Phidget_set_config ( canal, serial, port, TRUE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, TRUE );
      }
     else if (!strcasecmp(capteur, "AC-CURRENT-25A"))
      { if ( PhidgetVoltageInput_create( (PhidgetVoltageInputHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
        if ( Phidget_setOnErrorHandler( canal->handle, Phidget_onError, canal ) ) goto error;
        if ( PhidgetVoltageInput_setOnSensorChangeHandler( (PhidgetVoltageInputHandle)canal->handle,
                                                            Phidget_onVoltageSensorChange, canal ) != EPHIDGET_OK ) goto error;
-       Phidget_set_config ( canal, serial, port, TRUE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, TRUE );
      }
     else if (!strcasecmp(capteur, "AC-CURRENT-50A"))
      { if ( PhidgetVoltageInput_create( (PhidgetVoltageInputHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
@@ -365,36 +366,36 @@
        if ( PhidgetVoltageInput_setOnSensorChangeHandler( (PhidgetVoltageInputHandle)canal->handle,
                                                            Phidget_onVoltageSensorChange, canal ) != EPHIDGET_OK ) goto error;
        if ( PhidgetVoltageInput_setVoltageRange( (PhidgetVoltageInputHandle)canal->handle, VOLTAGE_RANGE_5V) != EPHIDGET_OK ) goto error;
-       Phidget_set_config ( canal, serial, port, TRUE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, TRUE );
      }
     else if (!strcasecmp(capteur, "AC-CURRENT-100A"))
      { if ( PhidgetVoltageInput_create( (PhidgetVoltageInputHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
        if ( Phidget_setOnErrorHandler( canal->handle, Phidget_onError, canal ) ) goto error;
        if ( PhidgetVoltageInput_setOnSensorChangeHandler( (PhidgetVoltageInputHandle)canal->handle,
                                                            Phidget_onVoltageSensorChange, canal ) != EPHIDGET_OK ) goto error;
-       Phidget_set_config ( canal, serial, port, TRUE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, TRUE );
      }
     else if (!strcasecmp(capteur, "TEMP_1124_0"))
      { if ( PhidgetVoltageRatioInput_create( (PhidgetVoltageRatioInputHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
        if ( Phidget_setOnErrorHandler( canal->handle, Phidget_onError, canal ) ) goto error;
        if ( PhidgetVoltageRatioInput_setOnSensorChangeHandler( (PhidgetVoltageRatioInputHandle)canal->handle,
                                                                 Phidget_onVoltageRatioSensorChange, canal ) != EPHIDGET_OK ) goto error;
-       Phidget_set_config ( canal, serial, port, TRUE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, TRUE );
      }
     else if (!strcasecmp(capteur, "DIGITAL-INPUT"))
      { if ( PhidgetDigitalInput_create( (PhidgetDigitalInputHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
        if ( Phidget_setOnErrorHandler( canal->handle, Phidget_onError, canal ) ) goto error;
        if ( PhidgetDigitalInput_setOnStateChangeHandler( (PhidgetDigitalInputHandle)canal->handle, Phidget_onDigitalInputChange, canal ) ) goto error;
-       Phidget_set_config ( canal, serial, port, TRUE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, TRUE );
      }
     else if (!strcasecmp(capteur, "REL2001_0"))
      { if ( PhidgetDigitalOutput_create( (PhidgetDigitalOutputHandle *)&canal->handle ) != EPHIDGET_OK ) goto error;
        if ( Phidget_setOnErrorHandler( canal->handle, Phidget_onError, canal ) ) goto error;
-       Phidget_set_config ( canal, serial, port, TRUE );
+       Phidget_set_config ( canal, Agent_vars->serial, port, TRUE );
      }
     else
     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_INFO,
-                 "capteur phidget inconnue on S/N %d, port '%d' capteur '%s'", serial, port, capteur );
+                 "capteur phidget inconnue on S/N %d, port '%d' capteur '%s'", Agent_vars->serial, port, capteur );
        goto error;
      }
 
@@ -481,12 +482,14 @@ error:
   { Config_add_parameter ( "hostname", "hostname", "Hostname of remote Phidget device", CONFIG_STRING );
     Config_add_parameter ( "password", "password", "Password for remote Phidget device", CONFIG_STRING );
     Config_add_parameter ( "description", "description", "Description of remote Phidget device", CONFIG_STRING );
+    Config_add_parameter ( "serial", "serial", "Serial number of remote Phidget device", CONFIG_INT );
     Agent = Agent_init ( argv[0], "phidget", ABLS_AGENT_PHIDGET_VERSION, sizeof(struct ABLS_PHIDGET_VARS), argc, argv );
     Agent_vars = Agent->vars;
 
     Agent_vars->hostname    = Agent_config_get_string ( Agent, "hostname" );
     Agent_vars->password    = Agent_config_get_string ( Agent, "password" );
     Agent_vars->description = Agent_config_get_string ( Agent, "description" );
+    Agent_vars->serial      = Agent_config_get_int    ( Agent, "serial" );
 
 again:
     PhidgetReturnCode result = PhidgetNet_addServer( Agent_vars->hostname, Agent_vars->hostname, 5661, Agent_vars->password, 0 );
