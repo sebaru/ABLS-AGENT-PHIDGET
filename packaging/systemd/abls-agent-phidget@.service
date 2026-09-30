@@ -8,6 +8,8 @@ Type=simple
 ExecStart=/usr/bin/abls-agent-phidget --agent-tech-id %i
 DynamicUser=yes
 SupplementaryGroups=abls
+StateDirectory=abls-agent-phidget/%i
+WorkingDirectory=%S/abls-agent-phidget/%i
 Restart=on-failure
 RestartSec=5s
 

@@ -46,7 +46,7 @@
     const gchar* errorString;
     gchar errorDetail[errorDetailLen];
     Phidget_getLastError(&errorCode, &errorString, errorDetail, &errorDetailLen);
-    Info( __func__, canal->agent->agent_classe, canal->agent->agent_tech_id, LOG_ERR, "Phidget Error %d for '%s' (%s) : %s - %s",
+    Info( __func__, Agent_get_classe ( canal->agent ), Agent_get_tech_id ( canal->agent ), LOG_ERR, "Phidget Error %d for '%s' (%s) : %s - %s",
           errorCode, capteur, classe, errorString, errorDetail );
   }
 /******************************************************************************************************************************/
@@ -61,13 +61,13 @@
     gchar *classe         = Json_get_string(canal->element, "classe");
 
     if ( !strcmp ( classe, "AI" ) )
-    { Info( __func__, canal->agent->agent_classe, canal->agent->agent_tech_id, LOG_ERR, "Error for '%s:%s' : '%s' (code %X). Set in_range = FALSE.",
-            canal->agent->agent_tech_id, agent_acronyme, description, code );
+    { Info( __func__, Agent_get_classe ( canal->agent ), Agent_get_tech_id ( canal->agent ), LOG_ERR, "Error for '%s:%s' : '%s' (code %X). Set in_range = FALSE.",
+            Agent_get_tech_id ( canal->agent ), agent_acronyme, description, code );
        Mqtt_Send_AI ( canal->agent, canal->element, 0.0, FALSE );
      }
     else
-     { Info( __func__, canal->agent->agent_classe, canal->agent->agent_tech_id, LOG_ERR, "Error for '%s:%s' : '%s' (code %X).",
-             canal->agent->agent_tech_id, agent_acronyme, description, code );
+     { Info( __func__, Agent_get_classe ( canal->agent ), Agent_get_tech_id ( canal->agent ), LOG_ERR, "Error for '%s:%s' : '%s' (code %X).",
+             Agent_get_tech_id ( canal->agent ), agent_acronyme, description, code );
      }
   }
 /******************************************************************************************************************************/
@@ -78,7 +78,7 @@
  static void CCONV Phidget_onPHSensorChange ( PhidgetPHSensorHandle handle, void *ctx, double valeur )
   { struct ABLS_PHIDGET_ELEMENT *canal = ctx;
     gchar *agent_acronyme = Json_get_string(canal->element, "agent_acronyme");
-    Info( __func__, canal->agent->agent_classe, canal->agent->agent_tech_id, LOG_DEBUG, "'%s:%s' = %f", canal->agent->agent_tech_id, agent_acronyme, valeur );
+    Info( __func__, Agent_get_classe ( canal->agent ), Agent_get_tech_id ( canal->agent ), LOG_DEBUG, "'%s:%s' = %f", Agent_get_tech_id ( canal->agent ), agent_acronyme, valeur );
     Mqtt_Send_AI ( canal->agent, canal->element, valeur, TRUE );
   }
 /******************************************************************************************************************************/
@@ -89,7 +89,7 @@
  static void CCONV Phidget_onTemperatureSensorChange ( PhidgetTemperatureSensorHandle handle, void *ctx, double valeur )
   { struct ABLS_PHIDGET_ELEMENT *canal = ctx;
     gchar *agent_acronyme = Json_get_string(canal->element, "agent_acronyme");
-    Info( __func__, canal->agent->agent_classe, canal->agent->agent_tech_id, LOG_DEBUG, "'%s:%s' = %f", canal->agent->agent_tech_id, agent_acronyme, valeur );
+    Info( __func__, Agent_get_classe ( canal->agent ), Agent_get_tech_id ( canal->agent ), LOG_DEBUG, "'%s:%s' = %f", Agent_get_tech_id ( canal->agent ), agent_acronyme, valeur );
     Mqtt_Send_AI ( canal->agent, canal->element, valeur, TRUE );
   }
 /******************************************************************************************************************************/
@@ -100,7 +100,7 @@
  static void CCONV Phidget_onVoltageInputChange ( PhidgetVoltageInputHandle handle, void *ctx, double valeur )
   { struct ABLS_PHIDGET_ELEMENT *canal = ctx;
     gchar *agent_acronyme = Json_get_string(canal->element, "agent_acronyme");
-    Info( __func__, canal->agent->agent_classe, canal->agent->agent_tech_id, LOG_DEBUG, "'%s:%s' = %f", canal->agent->agent_tech_id, agent_acronyme, valeur );
+    Info( __func__, Agent_get_classe ( canal->agent ), Agent_get_tech_id ( canal->agent ), LOG_DEBUG, "'%s:%s' = %f", Agent_get_tech_id ( canal->agent ), agent_acronyme, valeur );
     Mqtt_Send_AI ( canal->agent, canal->element, valeur, TRUE );
   }
 /******************************************************************************************************************************/
@@ -112,7 +112,7 @@
                                                    Phidget_UnitInfo *sensorUnit )
   { struct ABLS_PHIDGET_ELEMENT *canal = ctx;
     gchar *agent_acronyme = Json_get_string(canal->element, "agent_acronyme");
-    Info( __func__, canal->agent->agent_classe, canal->agent->agent_tech_id, LOG_DEBUG, "'%s:%s' = %f", canal->agent->agent_tech_id, agent_acronyme, valeur );
+    Info( __func__, Agent_get_classe ( canal->agent ), Agent_get_tech_id ( canal->agent ), LOG_DEBUG, "'%s:%s' = %f", Agent_get_tech_id ( canal->agent ), agent_acronyme, valeur );
     Mqtt_Send_AI ( canal->agent, canal->element, valeur, TRUE );
   }
 /******************************************************************************************************************************/
@@ -124,7 +124,7 @@
                                                         Phidget_UnitInfo *sensorUnit)
   { struct ABLS_PHIDGET_ELEMENT *canal = ctx;
     gchar *agent_acronyme = Json_get_string(canal->element, "agent_acronyme");
-    Info( __func__, canal->agent->agent_classe, canal->agent->agent_tech_id, LOG_DEBUG, "'%s:%s' = %f", canal->agent->agent_tech_id, agent_acronyme, valeur );
+    Info( __func__, Agent_get_classe ( canal->agent ), Agent_get_tech_id ( canal->agent ), LOG_DEBUG, "'%s:%s' = %f", Agent_get_tech_id ( canal->agent ), agent_acronyme, valeur );
     Mqtt_Send_AI ( canal->agent, canal->element, valeur, TRUE );
   }
 /******************************************************************************************************************************/
@@ -135,7 +135,7 @@
  static void CCONV Phidget_onDigitalInputChange ( PhidgetDigitalInputHandle handle, void *ctx, int valeur )
   { struct ABLS_PHIDGET_ELEMENT *canal = ctx;
     gchar *agent_acronyme = Json_get_string(canal->element, "agent_acronyme");
-    Info( __func__, canal->agent->agent_classe, canal->agent->agent_tech_id, LOG_DEBUG, "'%s:%s' = %d", canal->agent->agent_tech_id, agent_acronyme, valeur );
+    Info( __func__, Agent_get_classe ( canal->agent ), Agent_get_tech_id ( canal->agent ), LOG_DEBUG, "'%s:%s' = %d", Agent_get_tech_id ( canal->agent ), agent_acronyme, valeur );
     Mqtt_Send_DI ( canal->agent, canal->element, (valeur ? TRUE : FALSE) );
   }
 /******************************************************************************************************************************/
@@ -146,7 +146,7 @@
  static void CCONV Phidget_onSensorChange ( PhidgetVoltageInputHandle handle, void *ctx, double valeur, Phidget_UnitInfo *sensorUnit )
   { struct ABLS_PHIDGET_ELEMENT *canal = ctx;
     gchar *agent_acronyme = Json_get_string(canal->element, "agent_acronyme");
-    Info( __func__, canal->agent->agent_classe, canal->agent->agent_tech_id, LOG_DEBUG, "'%s:%s' = %f %s", canal->agent->agent_tech_id, agent_acronyme, valeur, sensorUnit->symbol );
+    Info( __func__, Agent_get_classe ( canal->agent ), Agent_get_tech_id ( canal->agent ), LOG_DEBUG, "'%s:%s' = %f %s", Agent_get_tech_id ( canal->agent ), agent_acronyme, valeur, sensorUnit->symbol );
     Mqtt_Send_AI ( canal->agent, canal->element, valeur, TRUE );
   }
 /******************************************************************************************************************************/
@@ -229,7 +229,7 @@
 
     Info( __func__, classe, agent_acronyme, LOG_NOTICE,
           "'%s:%s' Phidget S/N '%d' Port '%d' capteur '%s' (canal '%d') attached. %d channels available.",
-          canal->agent->agent_tech_id, agent_acronyme, serial_number, port, capteur, num_canal, nbr_canaux );
+          Agent_get_tech_id ( canal->agent ), agent_acronyme, serial_number, port, capteur, num_canal, nbr_canaux );
 
     canal->attached = TRUE;
   }
@@ -252,7 +252,7 @@
 
     Info( __func__, "phidget", agent_acronyme, LOG_NOTICE,
           "'%s:%s' Phidget S/N '%d' Port '%d' classe '%s' (canal '%d') detached. %d channels available.",
-          canal->agent->agent_tech_id, agent_acronyme, serial_number, port, classe, num_canal, nbr_canaux );
+          Agent_get_tech_id ( canal->agent ), agent_acronyme, serial_number, port, classe, num_canal, nbr_canaux );
     canal->attached = FALSE;
   }
 /******************************************************************************************************************************/
@@ -288,16 +288,16 @@
 /******************************************************************************************************************************/
  static void Phidget_Charger_un_IO (JsonArray *array, guint index_, JsonNode *element, gpointer user_data )
   { struct ABLS_AGENT *agent = user_data;
-    struct ABLS_PHIDGET_VARS *vars = agent->vars;
+    struct ABLS_PHIDGET_VARS *vars = Agent_get_vars ( agent );
     gchar *capteur = Json_get_string( element, "capteur" );
     gint port      = Json_get_int   ( element, "port" );
 
-    Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_INFO, "Loading S/N %d, port '%d', capteur '%s'",
+    Info( __func__, Agent_get_classe ( agent ), Agent_get_tech_id ( agent ), LOG_INFO, "Loading S/N %d, port '%d', capteur '%s'",
           Agent_vars->serial, port, capteur );
 
     struct ABLS_PHIDGET_ELEMENT *canal = g_try_malloc0 ( sizeof(struct ABLS_PHIDGET_ELEMENT) );
     if (!canal)
-     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ALERT, "Memory Error on S/N %d, port '%d' capteur '%s'",
+     { Info( __func__, Agent_get_classe ( agent ), Agent_get_tech_id ( agent ), LOG_ALERT, "Memory Error on S/N %d, port '%d' capteur '%s'",
              Agent_vars->serial, port, capteur );
        return;
      }
@@ -394,7 +394,7 @@
        Phidget_set_config ( canal, Agent_vars->serial, port, TRUE );
      }
     else
-    { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_INFO,
+    { Info( __func__, Agent_get_classe ( agent ), Agent_get_tech_id ( agent ), LOG_INFO,
                  "capteur phidget inconnue on S/N %d, port '%d' capteur '%s'", Agent_vars->serial, port, capteur );
        goto error;
      }
@@ -439,24 +439,24 @@ error:
 /* Sortie: Niet                                                                                                               */
 /******************************************************************************************************************************/
  static void Phidget_SET_DO ( struct ABLS_AGENT *agent, JsonNode *msg )
-  { struct ABLS_PHIDGET_VARS *vars = agent->vars;
+  { struct ABLS_PHIDGET_VARS *vars = Agent_get_vars ( agent );
     gchar *agent_acronyme = Json_get_string ( msg, "mqtt_topic_lvl2" );
     gchar *tech_id        = Json_get_string ( msg, "tech_id" );
     gchar *acronyme       = Json_get_string ( msg, "acronyme" );
 
     if (!agent_acronyme)
-     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "Requete mal formée manque mqtt_topic_lvl2" );
+     { Info( __func__, Agent_get_classe ( agent ), Agent_get_tech_id ( agent ), LOG_ERR, "Requete mal formée manque mqtt_topic_lvl2" );
        return;
      }
 
     if (!Json_has_member ( msg, "etat" ))
-     { Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_ERR, "Requete mal formée manque etat" );
+     { Info( __func__, Agent_get_classe ( agent ), Agent_get_tech_id ( agent ), LOG_ERR, "Requete mal formée manque etat" );
        return;
      }
 
     gboolean etat = Json_get_bool ( msg, "etat" );
-    Info( __func__, agent->agent_classe, agent->agent_tech_id, LOG_NOTICE, "SET_DO '%s:%s'/'%s:%s'=%d",
-          agent->agent_tech_id, agent_acronyme, tech_id, acronyme, etat );
+    Info( __func__, Agent_get_classe ( agent ), Agent_get_tech_id ( agent ), LOG_NOTICE, "SET_DO '%s:%s'/'%s:%s'=%d",
+          Agent_get_tech_id ( agent ), agent_acronyme, tech_id, acronyme, etat );
 
     GSList *liste = vars->Liste_sensors;
     while (liste)
@@ -484,7 +484,7 @@ error:
     Config_add_parameter ( "description", "description", "Description of remote Phidget device", CONFIG_STRING );
     Config_add_parameter ( "serial", "serial", "Serial number of remote Phidget device", CONFIG_INT );
     Agent = Agent_init ( argv[0], "phidget", ABLS_AGENT_PHIDGET_VERSION, sizeof(struct ABLS_PHIDGET_VARS), argc, argv );
-    Agent_vars = Agent->vars;
+    Agent_vars = Agent_get_vars ( Agent );
 
     Agent_vars->hostname    = Agent_config_get_string ( Agent, "hostname" );
     Agent_vars->password    = Agent_config_get_string ( Agent, "password" );
@@ -496,18 +496,18 @@ again:
     if (result != EPHIDGET_OK)
      { const gchar *error;
        Phidget_getErrorDescription ( result, &error );
-       Info( __func__, Agent->agent_classe, Agent->agent_tech_id, LOG_ERR, "PhidgetNet_addServer '%s' (%s) failed: '%s'",
+       Info( __func__, Agent_get_classe ( Agent ), Agent_get_tech_id ( Agent ), LOG_ERR, "PhidgetNet_addServer '%s' (%s) failed: '%s'",
              Agent_vars->hostname, Agent_vars->description, error );
        sleep(10);
-       if (Agent->Agent_run == AGENT_IS_RUNNING) goto again;
-     } else Info( __func__, Agent->agent_classe, Agent->agent_tech_id, LOG_INFO, "PhidgetNet_addServer '%s' (%s) success", Agent_vars->hostname, Agent_vars->description );
+       if (Agent_is_running ( Agent )) goto again;
+     } else Info( __func__, Agent_get_classe ( Agent ), Agent_get_tech_id ( Agent ), LOG_INFO, "PhidgetNet_addServer '%s' (%s) success", Agent_vars->hostname, Agent_vars->description );
 
 /* Chargement des I/O */
-    Json_foreach_array_element ( Agent->api_config, "IO", Phidget_Charger_un_IO, Agent );
+    Agent_config_foreach_array_element ( Agent, "IO", Phidget_Charger_un_IO, Agent );
 
     Agent_is_ready ( Agent );
 
-    while(Agent->Agent_run == AGENT_IS_RUNNING)                                              /* On tourne tant que necessaire */
+    while(Agent_is_running ( Agent ))                                              /* On tourne tant que necessaire */
      { Agent_loop ( Agent );                                             /* Loop sur l'Agent pour mettre a jour la telemetrie */
 /************************************************* Calcul de la comm **********************************************************/
        GSList *elements = Agent_vars->Liste_sensors;
@@ -520,7 +520,7 @@ again:
 /****************************************************** Ecoute du master ******************************************************/
        JsonNode *mqtt_local_message;
        while ( (mqtt_local_message = Agent_get_mqtt_local_message ( Agent ) ) != NULL )
-        { if (Mqtt_topic_is ( mqtt_local_message, 2, "SET_DO", Agent->agent_tech_id ))
+        { if (Mqtt_topic_is ( mqtt_local_message, 2, "SET_DO", Agent_get_tech_id ( Agent ) ))
            { Phidget_SET_DO ( Agent, mqtt_local_message ); }
           Json_unref (mqtt_local_message);
         }
